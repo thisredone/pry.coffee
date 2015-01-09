@@ -5,10 +5,10 @@ class SyncPrompt
 
   done: true
 
-  constructor: ({@callback}) ->
+  constructor: ({@callback, @format}) ->
     @cli = prompt
-      infinite: false,
-      format: 'pryjs> '
+      infinite: false
+      format: @format || 'pryjs> '
     @done = false
     @cli.on('value', @handle)
 

@@ -1,6 +1,8 @@
 Command = require('../command')
 Range = require('../range')
 Compiler = require('../compiler')
+Validator = require('../validator')
+SyncPrompt = require('../sync_prompt')
 
 class Execute extends Command
 
@@ -21,9 +23,22 @@ class Execute extends Command
 
   executeCode: (code, language = null) ->
     try
-      console.log @compiler.execute(code, language)
+      @output.send @compiler.execute(@cleanse(code), language)
     catch err
       @last_error = err
+
+  cleanse: (code) ->
+    try
+      return code if Validator.valid(code)
+      @prompt = new SyncPrompt
+        callback: (input) ->
+          code += '\n' + input
+          !Validator.valid(code)
+        format: '... '
+      @prompt.open()
+      code
+    catch err
+      return '\n'
 
   switch_mode: ->
     @compiler.toggle_mode()

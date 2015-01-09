@@ -18,4 +18,4 @@ describe 'Validator', ->
       expect(subject.valid('hello(")"')).to.equal false
 
     it 'throws exception when mismatched', ->
-      expect(subject.valid.bind(@, 'hello(")"]')).to.throw 'Mismatched ]'
+      expect(subject.valid.bind(@, 'hello("hello[)"]')).to.throw 'Mismatched ] at column 15'
