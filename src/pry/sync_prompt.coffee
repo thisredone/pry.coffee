@@ -1,7 +1,6 @@
 readline = require('readline')
 EventEmitter = require('events').EventEmitter
 deasync = require('deasync')
-_ = require('underscore')
 
 class MultilineState
 
@@ -51,7 +50,8 @@ class SyncPrompt extends EventEmitter
   done: false
 
   constructor: (@options = {}) ->
-    @options = _.extend(_.pick(process, 'stdin', 'stdout'), @options)
+    @options.stdin = process.stdin
+    @options.stdout = process.stdout
     @indent = ''
     @cli = readline.createInterface
       input: @options.stdin
