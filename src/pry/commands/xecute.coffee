@@ -24,7 +24,7 @@ class Xecute extends Command
     @execute_code input.join(' ')
     chain.next()
 
-  colorizeLastLine: (prompt, code, lang = @compiler.mode()) ->
+  colorizeLastLine: (prompt, code, lang) ->
     done = false
     pygmentize {lang, format: "terminal"}, code, (_, res) =>
       done = true
@@ -36,8 +36,11 @@ class Xecute extends Command
     @output.send @compiler.execute(@code + @indent + code, language)
     @code = @indent = ''
 
-  execute_code: (code, language = null) ->
+  execute_code: (code, language = @compiler.mode()) ->
     try
+      if language isnt 'coffee'
+        return @output.send @compiler.execute(code, language)
+
       shouldDecreaseIndent = code.match(/^\s*(\}|\]|else|catch|finally|else\s+if\s+\S.*)$/)?
 
       prompt = @prompt.cli._prompt
@@ -48,7 +51,7 @@ class Xecute extends Command
 
       # process.stdout.moveCursor(0, -1)
       # console.log prompt + code
-      @colorizeLastLine(prompt, code) if code
+      @colorizeLastLine(prompt, code, language) if code
 
       shouldIncreaseIndent = code.match(///^\s*(.*class
         |[a-zA-Z\$_](\w|\$|:|\.)*\s*(?=\:(\s*\(.*\))?\s*((=|-)&gt;\s*$)) # function that is not one line
