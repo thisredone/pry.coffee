@@ -1,4 +1,3 @@
-File = require('./file')
 Range = require('./range')
 
 class Command
@@ -21,8 +20,7 @@ class Command
   # How many arguments you want. Number or range.
   args: new Range(0, 0)
 
-  constructor: ({@scope, @output, @prompt}) ->
-    @stack = new Error().stack
+  constructor: ({@scope, @output, @prompt, @app}) ->
     @constructor.commands[@constructor.name] = @
 
   command: (input) ->
@@ -49,13 +47,7 @@ class Command
     input.match(@command_regex())
 
   find_file: ->
-    foundCall = false
-    for item in @stack.split('\n')
-      if foundCall
-        [_, file, line] = item.match(/([^ (:]+):(\d+):\d+/)
-        return new File(file, line) if file isnt '<anonymous>'
-      else if item.match /Pry\.open/
-        foundCall = true
-    new File(__filename, 1)
+    @app.find_file()
+
 
 module.exports = Command

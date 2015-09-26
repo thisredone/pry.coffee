@@ -2,6 +2,7 @@ SyncPrompt = require('./sync_prompt')
 Output = require('./output/local_output')
 commands = require('./commands')
 AutoComplete = require('./completion')
+File = require('./file')
 
 class App
 
@@ -9,12 +10,13 @@ class App
 
   constructor: (@scope) ->
     @output = new Output()
-    @prompt = new SyncPrompt(typeahead: new AutoComplete(@scope))
+    @stack = new Error().stack
+    @prompt = new SyncPrompt(typeahead: new AutoComplete(@scope, @find_file()).autocomplete)
     @prompt.on('data', @find_command)
 
   commands: ->
     if @_commands.length is 0
-      @_commands.push new command({@output, @scope, @prompt}) for _, command of commands
+      @_commands.push new command({@output, @scope, @prompt, app: @}) for _, command of commands
     @_commands
 
   find_command: (input, chain) =>
@@ -27,5 +29,18 @@ class App
   open: ->
     @prompt.type('whereami')
     @prompt.open()
+
+  find_file: ->
+    return @file if @file
+    @file = do =>
+      foundCall = false
+      for item in @stack.split('\n')
+        if foundCall
+          [_, file, line] = item.match(/([^ (:]+):(\d+):\d+/)
+          return new File(file, line) if file isnt '<anonymous>'
+        else if item.match /Pry\.open/
+          foundCall = true
+      new File(__filename, 1)
+
 
 module.exports = App
