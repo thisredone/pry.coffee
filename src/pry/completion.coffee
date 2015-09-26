@@ -6,20 +6,15 @@ class AutoComplete
   SIMPLEVAR = /\s*(\w*)$/i
 
   KEYWORDS = [
-    'undefined', 'then', 'unless', 'until', 'loop', 'of', 'by', 'when',
+    'undefined', 'then', 'unless', 'until', 'loop', 'of', 'by', 'when', 'require',
     'true', 'false', 'null', 'this', 'new', 'delete', 'typeof', 'in', 'instanceof',
     'return', 'throw', 'break', 'continue', 'if', 'else', 'switch', 'for', 'while',
-    'do', 'try', 'catch', 'finally', 'class', 'extends', 'super'
-  ]
-
-
-  RESERVED = ['switch'
-    'case', 'default', 'function', 'var', 'void', 'with'
-    'const', 'let', 'enum', 'export', 'import', 'native'
-    '__hasProp', '__extends', '__slice', '__bind', '__indexOf'
+    'do', 'try', 'catch', 'finally', 'class', 'extends', 'super',
+    'whereami', 'kill!', 'exit', 'wtf', 'play', 'version', 'help' # commands
   ]
 
   constructor: (@scope, @file) ->
+    @localVars = @file.getLocalVariables()
     @compiler = new Compiler({@scope, isCoffee: true})
 
   autocomplete: (text) =>
@@ -40,7 +35,7 @@ class AutoComplete
 
   completeVariable: (text) ->
     if free = text.match(SIMPLEVAR)?[1]
-      [@getCompletions(free, KEYWORDS), free]
+      [@getCompletions(free, @localVars.concat(KEYWORDS)), free]
 
   getCompletions: (prefix, candidates) ->
     if prefix
@@ -49,7 +44,14 @@ class AutoComplete
       candidates
 
   getPropertyNames: (obj) ->
-    (name for own name of obj)
+    props = (name for own name of obj)
+    if typeof obj is 'string'
+      props = props.concat Object.getOwnPropertyNames(String.prototype)
+    else if obj instanceof Array
+      props = props.concat Object.getOwnPropertyNames(Array.prototype)
+    else if obj is Object
+      props = props.concat Object.getOwnPropertyNames(Object)
+    props
 
 
 module.exports = AutoComplete
