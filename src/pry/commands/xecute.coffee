@@ -14,15 +14,34 @@ class Xecute extends Command
     super
     isCoffee = @find_file().name?.slice(-6) is 'coffee'
     @compiler = new Compiler({@scope, isCoffee})
+    @code = ''
+    @indent = ''
 
   execute: (input, chain) ->
     return @switch_mode(chain) if input[0] == 'mode'
     @execute_code input.join(' ')
     chain.next()
 
+  eval_code: (code, language) ->
+    @output.send @compiler.execute(@code + @indent + code, language)
+    @code = @indent = ''
+
   execute_code: (code, language = null) ->
     try
-      @output.send @compiler.execute(code, language)
+      if code.trim().slice(-1) is '\\'
+        @code += @indent + code.trim().slice(0, -1) + "\n"
+        @indent += '  '
+        return
+
+      if @indent
+        if code
+          @code += @indent + code.trim() + "\n"
+        else
+          @indent = @indent.slice(0, -2)
+          @eval_code(code) unless @indent
+      else
+        @eval_code(code)
+
     catch err
       @last_error = err
       @output.send err
