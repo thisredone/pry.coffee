@@ -52,6 +52,7 @@ class SyncPrompt extends EventEmitter
 
   constructor: (@options = {}) ->
     @options = _.extend(_.pick(process, 'stdin', 'stdout'), @options)
+    @indent = ''
     @cli = readline.createInterface
       input: @options.stdin
       output: @options.stdout
@@ -76,7 +77,10 @@ class SyncPrompt extends EventEmitter
     @lines = ''
 
   prompt: =>
-    @state().prompt(@, "[#{@count}] pryjs> ")
+    if @indent
+      @state().prompt(@, "[#{@count}] pryjs* #{@indent}")
+    else
+      @state().prompt(@, "[#{@count}] pryjs> ")
 
   open: ->
     @done = false

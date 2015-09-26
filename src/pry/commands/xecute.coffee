@@ -31,16 +31,17 @@ class Xecute extends Command
       if code.trim().slice(-1) is '\\'
         @code += @indent + code.trim().slice(0, -1) + "\n"
         @indent += '  '
-        return
-
-      if @indent
-        if code
-          @code += @indent + code.trim() + "\n"
-        else
-          @indent = @indent.slice(0, -2)
-          @eval_code(code) unless @indent
       else
-        @eval_code(code)
+        if @indent
+          if code
+            @code += @indent + code.trim() + "\n"
+          else
+            @indent = @indent.slice(0, -2)
+            @eval_code(code) unless @indent
+        else
+          @eval_code(code)
+
+      @prompt.indent = @indent
 
     catch err
       @last_error = err
@@ -52,7 +53,7 @@ class Xecute extends Command
     chain.next()
 
   # Should always fallback to this
-  match: (input) ->
+  match: (input, chain) ->
     [input, input]
 
 module.exports = Xecute

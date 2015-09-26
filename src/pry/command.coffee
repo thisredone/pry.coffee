@@ -21,7 +21,7 @@ class Command
   # How many arguments you want. Number or range.
   args: new Range(0, 0)
 
-  constructor: ({@scope, @output}) ->
+  constructor: ({@scope, @output, @prompt}) ->
     @stack = new Error().stack
     @constructor.commands[@constructor.name] = @
 
