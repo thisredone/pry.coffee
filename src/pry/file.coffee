@@ -34,7 +34,7 @@ class File
       indentLevel = @_getIndentLevel(line)
       continue if indentLevel > currentIndentLevel
       currentIndentLevel = indentLevel
-      match = line.match(/^\s*\[((?:\w+|\,|\s)+)\]\s*\=|^\s*(\w+)\s*\=/)
+      match = line.match(/^\s*(?:\[|{)((?:\w+|\,|\s)+)(?:\]|})\s*\=|^\s*(\w+)\s*\=/)
       continue unless match?
       [_, multiple, single] = match
       if multiple?
