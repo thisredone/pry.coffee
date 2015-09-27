@@ -1,3 +1,5 @@
+{execSync} = require 'child_process'
+
 module.exports = (grunt) ->
 
   grunt.initConfig
@@ -17,3 +19,4 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.registerTask 'default', ['clean:compiled', 'coffee']
+  grunt.registerTask 'createExec', -> execSync "echo '#!/usr/bin/env node' | cat - lib/pry.js > lib/pry.bin.js"
