@@ -1,6 +1,7 @@
 readline = require('readline')
 EventEmitter = require('events').EventEmitter
 deasync = require('deasync')
+chalk = require('chalk')
 
 class MultilineState
 
@@ -49,16 +50,14 @@ class SyncPrompt extends EventEmitter
 
   done: false
 
-  constructor: (@options = {}) ->
-    @options.stdin = process.stdin
-    @options.stdout = process.stdout
+  constructor: ({typeahead, @mode}) ->
     @indent = ''
     @cli = readline.createInterface
-      input: @options.stdin
-      output: @options.stdout
-      completer: @options.typeahead
+      input: process.stdin
+      output: process.stdout
+      completer: typeahead
     @cli.on('line', @line)
-    @options.stdin.on('data', @keypress)
+    process.stdin.on('data', @keypress)
 
   state: (state) =>
     @_state = state if state
@@ -77,10 +76,11 @@ class SyncPrompt extends EventEmitter
     @lines = ''
 
   prompt: =>
-    if @indent
-      @state().prompt(@, "[#{@count}] pryjs* #{@indent}")
-    else
-      @state().prompt(@, "[#{@count}] pryjs> ")
+    @state().prompt @, [
+      "[#{@count}] "
+      if @mode is 'js' then chalk.white('pryjs') else chalk.blue('pryjs')
+      if @indent then "* #{@indent}" else '> '
+    ].join('')
 
   open: ->
     @done = false
@@ -94,7 +94,7 @@ class SyncPrompt extends EventEmitter
 
   close: =>
     @done = true
-    @options.stdin.removeListener('data', @keypress)
+    process.stdin.removeListener('data', @keypress)
     @cli.close()
 
 module.exports = SyncPrompt

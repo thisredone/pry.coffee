@@ -25,6 +25,7 @@ class Help extends Command
         @output.add(chalk.blue(command.name), '-', command.definition)
         @output.sendAll()
       else
+        @output.add(chalk.blue('mode'), '-', 'toggle between coffee and javascript modes')
         for name, command of @commands()
           @output.add(chalk.blue(command.name), '-', command.definition) if command.name
         @output.sendAll()

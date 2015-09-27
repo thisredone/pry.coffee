@@ -1,6 +1,6 @@
 {
   "name": "pry",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Pry like REPL in javascript.",
   "main": "lib/pry.js",
   "scripts": {

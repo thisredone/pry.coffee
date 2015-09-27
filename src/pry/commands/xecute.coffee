@@ -16,6 +16,7 @@ class Xecute extends Command
     super
     isCoffee = @find_file().name?.slice(-6) is 'coffee'
     @compiler = new Compiler({@scope, isCoffee})
+    @prompt.mode = @compiler.mode()
     @code = ''
     @indent = ''
 
@@ -92,6 +93,7 @@ class Xecute extends Command
 
   switch_mode: (chain) ->
     @compiler.toggle_mode()
+    @prompt.mode = @compiler.mode()
     @output.send "Switched mode to '#{@compiler.mode()}'."
     chain.next()
 
