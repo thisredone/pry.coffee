@@ -19,7 +19,6 @@ eval pry.it
 
 
 PRYINPUTCOLOR env variable makes pryjs also color typed coffeescript (not only output)
-If things seem slow to you PRYBLEAK environment variable disables coloring of the code speeding things up considerably.
 
 ### Extra Commands
 
