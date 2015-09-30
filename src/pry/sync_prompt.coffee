@@ -1,7 +1,8 @@
-readline = require('readline')
-EventEmitter = require('events').EventEmitter
-deasync = require('deasync')
-chalk = require('chalk')
+readline = require 'readline'
+fs = require 'fs'
+EventEmitter = (require 'events').EventEmitter
+deasync = require 'deasync'
+chalk = require 'chalk'
 
 class MultilineState
 
@@ -23,6 +24,7 @@ class MultilineState
       input.cli.setPrompt(prompt.replace(/.(?!$)/g, '.'))
     input.cli._refreshLine()
 
+
 class SinglelineState
 
   keypress: (input, chars) ->
@@ -36,10 +38,10 @@ class SinglelineState
     input.cli.setPrompt(prompt)
     input.cli.prompt()
 
+
 class SyncPrompt extends EventEmitter
 
   lines: ''
-
   count: 0
 
   states:
@@ -56,7 +58,18 @@ class SyncPrompt extends EventEmitter
       input: process.stdin
       output: process.stdout
       completer: typeahead
-    @cli.on('line', @line)
+    try
+      hist = fs.readFileSync("#{process.env.HOME}/.pryjs_history").toString()
+      @cli.history = hist.split('\n').reverse()
+    catch
+      null
+    lastLine = @cli.history[0]
+    @cli.on 'line', (line) =>
+      if line and line.length and line isnt lastLine
+        fs.appendFile("#{process.env.HOME}/.pryjs_history", "\n" + line)
+        lastLine = line
+      @line(line)
+    
     process.stdin.on('data', @keypress)
 
   state: (state) =>
