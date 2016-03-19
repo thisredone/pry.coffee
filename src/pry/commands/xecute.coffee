@@ -22,8 +22,8 @@ class Xecute extends Command
 
   execute: (input, chain) ->
     return @switch_mode(chain) if input[0] == 'mode'
-    @execute_code input.join(' ')
-    chain.next()
+    res = @execute_code input.join(' ')
+    res?.then?(-> chain.next()) or chain.next()
 
   colorizeLastLine: (prompt, code, lang) ->
     done = false
@@ -34,8 +34,12 @@ class Xecute extends Command
     deasync.runLoopOnce() until done
 
   eval_code: (code, language) ->
-    @output.prettySend @compiler.execute(@code + @indent + code, language)
-    @code = @indent = ''
+    @prompt.indent = @indent
+    res = @compiler.execute(@code + @indent + code, language)
+    next = (res) =>
+      @output.prettySend res
+      @code = @indent = ''
+    res?.then?(next).catch(next) or next(res)
 
   execute_code: (code, language = @compiler.mode()) ->
     try
@@ -79,9 +83,9 @@ class Xecute extends Command
             if @indent
               process.stdout.moveCursor(0, -1)
             else
-              @eval_code(code)
+              return @eval_code(code)
         else
-          @eval_code(code)
+          return @eval_code(code)
 
       @prompt.indent = @indent
 

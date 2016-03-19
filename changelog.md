@@ -1,3 +1,12 @@
+# 0.5.0
+## New Features
+* Added the ability to use Promises in a synchronous manner.  
+
+  If bluebird is available you can use `yield` like so:
+  ~~~ coffeescript
+  [0] pryjs> res = yield functionThatReturnsAPromise()
+  ~~~
+
 # 0.1.0
 
 ## New Features
