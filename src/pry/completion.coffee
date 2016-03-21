@@ -45,7 +45,7 @@ class AutoComplete
       candidates
 
   getPropertyNames: (obj) ->
-    props = (name for own name of obj)
+    props = (name for name, _ of obj)
     if typeof obj is 'string'
       props = props.concat Object.getOwnPropertyNames(String.prototype)
     else if obj instanceof Array
