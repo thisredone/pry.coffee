@@ -4,8 +4,8 @@ EventEmitter = (require 'events').EventEmitter
 deasync = require 'deasync'
 chalk = require 'chalk'
 
-class MultilineState
 
+class MultilineState
   data: ''
 
   keypress: (input, chars) ->
@@ -26,9 +26,11 @@ class MultilineState
 
 
 class SinglelineState
-
   keypress: (input, chars) ->
-    if chars is '\u0016'
+    if chars is ''
+      input.state('search')
+      input.prompt()
+    else if chars is '\u0016'
       input.state('multi')
       input.prompt()
     else if chars.match(/(\r|\n)$/)
@@ -39,18 +41,52 @@ class SinglelineState
     input.cli.prompt()
 
 
-class SyncPrompt extends EventEmitter
+class ReverseSearch
+  init: ->
+    @index = -1
 
+  quit: (input) ->
+    input.state('single')
+    input.prompt()
+    input.cli._moveCursor input.cli.line.length
+    input.cli._refreshLine()
+
+  keypress: (input, chars) ->
+    if chars is ''
+      return @quit(input)
+
+    if chars.charCodeAt() is 13
+      if @searchResult
+        input.cli.history.shift()
+        input.cli.history.unshift(@searchResult)
+        input.type(@searchResult)
+      return @quit(input)
+
+    i = if chars is '' then @index else -1
+    history = input.cli.history
+    while i < history.length - 1
+      if history[++i].indexOf(input.cli.line) > 0
+        @index = i
+        break
+    @searchResult = history[@index]
+    input.prompt()
+
+  prompt: (input, prompt) ->
+    pre = 'failed-' if @searchResult is null and input.cli.line isnt ''
+    input.cli.setPrompt("(#{pre or ''}reverse-i-search)`#{input.cli.line}': #{@searchResult or ''}      # ")
+    input.cli._refreshLine()
+
+
+class SyncPrompt extends EventEmitter
   lines: ''
   count: 0
+  done: false
+  _state: 'single'
 
   states:
     multi: new MultilineState
     single: new SinglelineState
-
-  _state: 'single'
-
-  done: false
+    search: new ReverseSearch
 
   constructor: ({typeahead, @mode}) ->
     @indent = ''
@@ -58,6 +94,9 @@ class SyncPrompt extends EventEmitter
       input: process.stdin
       output: process.stdout
       completer: typeahead
+      terminal: true
+      historySize: 500
+
     try
       hist = fs.readFileSync("#{process.env.HOME}/.pryjs_history").toString()
       @cli.history = hist.split('\n').reverse()
@@ -73,7 +112,9 @@ class SyncPrompt extends EventEmitter
     process.stdin.on('data', @keypress)
 
   state: (state) =>
-    @_state = state if state
+    if state
+      @_state = state
+      @states[state].init?()
     @states[@_state]
 
   line: (line) =>

@@ -1,3 +1,7 @@
+# 0.6.0
+## New Features
+* Added Ctrl-R reverse search for terminal history
+
 # 0.5.0
 ## New Features
 * Added the ability to use Promises in a synchronous manner.  
