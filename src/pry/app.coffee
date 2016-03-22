@@ -12,7 +12,8 @@ class App
   constructor: (@scope, @isStandAlone) ->
     @output = new Output()
     @stack = new Error().stack
-    @prompt = new SyncPrompt(typeahead: new AutoComplete(@scope, @find_file()).autocomplete, mode: @find_file().type())
+    mode = if @isStandAlone then 'coffee' else @find_file().type()
+    @prompt = new SyncPrompt(typeahead: new AutoComplete(@scope, @find_file()).autocomplete, mode: mode)
     @prompt.onData = @find_command
 
   commands: ->

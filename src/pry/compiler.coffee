@@ -21,9 +21,9 @@ class Compiler
 
   execute_coffee: (code) ->
     if code.match /yield/
-      if @scope('P.coroutine || Promise.coroutine')?
+      if @scope(coffee.compile('P?.coroutine or Promise?.coroutine', bare: true))
         code = """
-          _cor = Promise?.coroutine or P?.coroutine
+          _cor = P?.coroutine or Promise?.coroutine
           do _cor => #{code}
         """
       else
