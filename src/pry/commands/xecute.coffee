@@ -60,7 +60,7 @@ class Xecute extends Command
         process.stdout.moveCursor(0, -1)
         console.log prompt + code
 
-      shouldIncreaseIndent = code.match(///^\s*(.*class
+      shouldIncreaseIndent = code.match(///^\s*(.*class\s
         |[a-zA-Z\$_](\w|\$|:|\.)*\s*(?=\:(\s*\(.*\))?\s*((=|-)&gt;\s*$)) # function that is not one line
         |[a-zA-Z\$_](\w|\$|\.)*\s*(:|=)\s*((if|while)(?!.*?then)|for|$) # assignment using multiline if/while/for
         |(if|while|unless)\b(?!.*?then)|(for|switch|when|loop)\b
