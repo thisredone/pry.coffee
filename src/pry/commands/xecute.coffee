@@ -14,7 +14,7 @@ class Xecute extends Command
 
   constructor: ->
     super
-    isCoffee = @app.isStandAlone or @find_file().type().name?.slice(-6) is 'coffee'
+    isCoffee = @app.isStandAlone or @find_file().type() is 'coffee'
     @compiler = new Compiler({@scope, isCoffee})
     @prompt.mode = @compiler.mode()
     @code = ''

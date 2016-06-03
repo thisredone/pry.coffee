@@ -8,10 +8,7 @@ class File
     @line = parseInt(@line)
 
   type: ->
-    if @name.match /coffee$/
-      'coffee'
-    else
-      'js'
+    if @name.match /coffee$/ then 'coffee' else 'js'
 
   by_lines: (start, end = start) ->
     @content().split('\n').slice(start - 1, end).join('\n')
