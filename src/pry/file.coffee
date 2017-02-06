@@ -3,9 +3,14 @@ SyncHighlight = require './sync_highlight'
 
 
 class File
-
   constructor: (@name, @line) ->
     @line = parseInt(@line)
+    lines = @content().split("\n")
+    unless lines[@line]?.match(/eval +pry\.it/)?
+      for l, i in lines
+        if l.match(/eval +pry\.it/)?
+          @line = i + 1
+          break
 
   type: ->
     if @name.match /coffee$/ then 'coffee' else 'js'

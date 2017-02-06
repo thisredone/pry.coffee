@@ -1,6 +1,6 @@
 {
   "name": "pry",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Pry like REPL in javascript. fork of blainesch/pry.js",
   "main": "lib/pry.js",
   "scripts": {
