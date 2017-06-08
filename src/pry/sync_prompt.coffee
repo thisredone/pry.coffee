@@ -105,10 +105,10 @@ class SyncPrompt extends EventEmitter
     lastLine = @cli.history[0]
     @cli.on 'line', (line) =>
       if line and line.length and line isnt lastLine
-        fs.appendFile("#{process.env.HOME}/.pryjs_history", "\n" + line)
+        fs.appendFile "#{process.env.HOME}/.pryjs_history", "\n" + line, ->
         lastLine = line
       @line(line)
-    
+
     process.stdin.on('data', @keypress)
 
   state: (state) =>
