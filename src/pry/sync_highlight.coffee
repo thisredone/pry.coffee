@@ -29,7 +29,7 @@ class SyncHighlight
         format: "terminal"
       , @content, (err, res) =>
         done = true
-        data = res.toString()
+        data = if err then @content else res.toString()
       deasync.runLoopOnce() until done
     else
       data = @content
