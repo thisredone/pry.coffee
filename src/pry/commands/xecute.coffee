@@ -49,9 +49,11 @@ class Xecute extends Command
         prompt = prompt.slice(0, -2)
         code += '  '
 
-      # process.stdout.moveCursor(0, -1)
-      # console.log prompt + code
-      @colorizeLastLine(prompt, code, language) if code
+      if process.env.PRYBLEAK?
+        process.stdout.moveCursor(0, -1)
+        console.log prompt + code
+      else
+        @colorizeLastLine(prompt, code, language) if code
 
       shouldIncreaseIndent = code.match(///^\s*(.*class
         |[a-zA-Z\$_](\w|\$|:|\.)*\s*(?=\:(\s*\(.*\))?\s*((=|-)&gt;\s*$)) # function that is not one line

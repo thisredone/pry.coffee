@@ -19,6 +19,9 @@ pry = require('pryjs')
 eval(pry.it)
 ~~~
 
+
+If things seem slow to you PRYBLEAK environment variable disables coloring of the code speeding things up considerably.
+
 ### Extra Commands
 
 While you are in the prompt there are a few things you might want to do:
