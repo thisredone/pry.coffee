@@ -15,7 +15,7 @@ class App
 
   commands: ->
     if @_commands.length is 0
-      @_commands.push new command({@output, @scope}) for i,command of commands
+      @_commands.push new command({@output, @scope, @prompt}) for _, command of commands
     @_commands
 
   typeahead: (input = '') =>
