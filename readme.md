@@ -2,21 +2,19 @@
 
 A interactive repl for node, inspired by [pry](https://github.com/pry/pry).
 
-[![Build Status](https://travis-ci.org/blainesch/pry.js.svg?branch=master)](https://travis-ci.org/blainesch/pry.js)
-
 ### Installing
 
 ~~~
-npm install --save pryjs
+npm install --save pry
 ~~~
 
 ### Usage
 
 Throw this beautiful snippet in the middle of your code:
 
-~~~ javascript
-pry = require('pryjs')
-eval(pry.it)
+~~~ coffeescript
+pry = require 'pry'
+eval pry.it
 ~~~
 
 

@@ -1,7 +1,7 @@
 {
-  "name": "pryjs",
-  "version": "0.1.1",
-  "description": "Pry like ability in javascript.",
+  "name": "pry",
+  "version": "0.2.0",
+  "description": "Pry like REPL in javascript.",
   "main": "lib/pry.js",
   "scripts": {
     "test": "mocha --recursive --reporter=mocha-pride --compilers coffee:coffee-script/register ./tests && ./node_modules/.bin/cucumber.js"
@@ -29,10 +29,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/blainesch/pry.js.git"
+    "url": "https://github.com/thisredone/pry.js"
   },
   "bugs": {
-    "url": "https://github.com/blainesch/pry.js/issues"
+    "url": "https://github.com/thisredone/pry.js/issues"
   },
-  "homepage": "https://github.com/blainesch/pry.js"
+  "homepage": "https://github.com/thisredone/pry.js"
 }
