@@ -3,11 +3,11 @@ SyncHighlight = require './sync_highlight'
 
 
 class File
-  constructor: (@name, @line) ->
-    lines = @content().split("\n")
-    unless @line
-      for l, i in lines
-        if l.match(/eval +pry\.it/)?
+  constructor: (@name, @line = 0) ->
+    @lines = @content().split("\n")
+    unless @lines[@line]?.match(/pry\.it/)
+      for l, i in @lines
+        if l.match(/eval\s*\(?\s*pry\.it/)?
           @line = i + 1
           break
 
@@ -15,7 +15,7 @@ class File
     if @name.match /coffee$/ then 'coffee' else 'js'
 
   by_lines: (start, end = start) ->
-    @content().split('\n').slice(start - 1, end).join('\n')
+    @lines.slice(start - 1, end).join('\n')
 
   content: ->
     @_content ||= fs.readFileSync(@name).toString()
@@ -24,15 +24,14 @@ class File
     start = (if start < 0 then 0 else start)
     new SyncHighlight(@content(), @type()).code_snippet(start, end, line)
 
-  _getIndentLevel: (line) ->
+  _getIndentLevel: (line) =>
     line.length - line.trimLeft().length
 
   getLocalVariables: ->
-    lines = @content().split("\n")
-    currentIndentLevel = @_getIndentLevel(lines[@line-1]) # eval pry.it
+    currentIndentLevel = @_getIndentLevel(@lines[@line-1]) # eval pry.it
     vars = []
     for i in [@line-2..0] when i > 0
-      line = lines[i]
+      line = @lines[i]
       indentLevel = @_getIndentLevel(line)
       continue if indentLevel > currentIndentLevel or not line.match(/\S/)
       currentIndentLevel = indentLevel
