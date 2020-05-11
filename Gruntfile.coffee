@@ -19,4 +19,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.registerTask 'default', ['clean:compiled', 'coffee']
-  grunt.registerTask 'createExec', -> execSync "echo '#!/usr/bin/env node' | cat - lib/pry.js > lib/pry.bin.js"
+  grunt.registerTask 'copyLibs', -> execSync "cp -r src/libs lib/"
+  grunt.registerTask 'createExec', -> execSync "echo '#!/usr/bin/env node' | cat - lib/pry.js > lib/pry.bin.js && chmod +x lib/pry.bin.js"

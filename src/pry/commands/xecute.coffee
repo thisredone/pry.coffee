@@ -1,6 +1,6 @@
-Command = require('../command')
-Range = require('../range')
-Compiler = require('../compiler')
+Command = require '../command'
+Range = require '../range'
+Compiler = require '../compiler'
 pygmentize = require 'pygmentize-bundled'
 deasync = require 'deasync'
 
@@ -34,13 +34,13 @@ class Xecute extends Command
     deasync.runLoopOnce() until done
 
   eval_code: (code, language) ->
-    @output.send @compiler.execute(@code + @indent + code, language)
+    @output.prettySend @compiler.execute(@code + @indent + code, language)
     @code = @indent = ''
 
   execute_code: (code, language = @compiler.mode()) ->
     try
       if language isnt 'coffee'
-        return @output.send @compiler.execute(code, language)
+        return @output.prettySend @compiler.execute(code, language)
 
       shouldDecreaseIndent = code.match(/^\s*(\}|\]|else|catch|finally|else\s+if\s+\S.*)$/)?
 
@@ -50,11 +50,11 @@ class Xecute extends Command
         prompt = prompt.slice(0, -2)
         code += '  '
 
-      if process.env.PRYBLEAK?
+      if process.env.PRYINPUTCOLOR?
+        @colorizeLastLine(prompt, code, language) if code
+      else
         process.stdout.moveCursor(0, -1)
         console.log prompt + code
-      else
-        @colorizeLastLine(prompt, code, language) if code
 
       shouldIncreaseIndent = code.match(///^\s*(.*class
         |[a-zA-Z\$_](\w|\$|:|\.)*\s*(?=\:(\s*\(.*\))?\s*((=|-)&gt;\s*$)) # function that is not one line
@@ -70,7 +70,6 @@ class Xecute extends Command
         @code += @indent + (if hasTrailingBackslash then code.slice(0, -1) else code) + "\n"
         @indent += '  '
       else
-
         if @indent
           if code
             @code += @indent + code + "\n"

@@ -1,11 +1,11 @@
 {
   "name": "pry",
-  "version": "0.3.6",
+  "version": "0.4.0",
   "description": "Pry like REPL in javascript.",
   "main": "lib/pry.js",
   "scripts": {
     "test": "mocha --recursive --reporter=mocha-pride --compilers coffee:coffee-script/register ./tests && ./node_modules/.bin/cucumber.js",
-    "build": "grunt && grunt createExec",
+    "build": "grunt && grunt createExec && grunt copyLibs",
     "deploy": "npm run build && npm publish"
   },
   "author": "blainesch",
