@@ -4,7 +4,9 @@ pry = require('../src/pry')
 class Complete
 
   constructor: ->
+    localVariable = 'asdf'
     @prettyLongVariableName = 'sup'
+    @thisVarIsnt = localVariable
     @anObjectWithProperties =
       theFirstOne: 'asdf'
       second: ['an', 'array']
