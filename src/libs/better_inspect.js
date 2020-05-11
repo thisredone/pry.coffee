@@ -123,6 +123,9 @@ var nativeFunctionString = Object.prototype.toString.toString();
 
 
 function formatValue(ctx, value, recurseTimes, firstTime) {
+  if (isProxy(value)) {
+    return '[Probably Proxy]';
+  }
   // Provide a hook for user-specified inspect functions.
   // Check that value is an object with an inspect function on it
   if (value && typeof value.inspect === 'function' &&
@@ -256,6 +259,9 @@ function formatPrimitive(ctx, value) {
     case 'boolean':
       return ctx.stylize('' + value, 'boolean');
   }
+  if (isProxy(value)) {
+    return '[Probably Proxy]';
+  }
   // For some reason typeof null is "object", so special case here.
   if (value === null) {
     return ctx.stylize('null', 'null');
@@ -288,43 +294,52 @@ function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
 }
 
 
+function isProxy(value) {
+  return typeof value === 'object' && String(value) === 'undefined';
+}
+
+
 function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
   var name, str, desc;
-  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
-  if (desc.get) {
-    if (desc.set) {
-      str = ctx.stylize('[Getter/Setter]', 'special');
-    } else {
-      str = ctx.stylize('[Getter]', 'special');
-    }
+  if (isProxy(value[key])) {
+    str = '[Probably Proxy]';
   } else {
-    if (desc.set) {
-      str = ctx.stylize('[Setter]', 'special');
-    }
-  }
-  if (!visibleKeys.hasOwnProperty(key)) {
-    name = key;
-  }
-  if (!str) {
-    if (ctx.seen.indexOf(desc.value) < 0) {
-      if (recurseTimes === null) {
-        str = formatValue(ctx, desc.value, null);
+    desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+    if (desc.get) {
+      if (desc.set) {
+        str = ctx.stylize('[Getter/Setter]', 'special');
       } else {
-        str = formatValue(ctx, desc.value, recurseTimes - 1);
-      }
-      if (str.indexOf('\n') > -1) {
-        if (array) {
-          str = str.split('\n').map(function(line) {
-            return '  ' + line;
-          }).join('\n').substr(2);
-        } else {
-          str = '\n' + str.split('\n').map(function(line) {
-            return '   ' + line;
-          }).join('\n');
-        }
+        str = ctx.stylize('[Getter]', 'special');
       }
     } else {
-      str = ctx.stylize('[Circular]', 'special');
+      if (desc.set) {
+        str = ctx.stylize('[Setter]', 'special');
+      }
+    }
+    if (!visibleKeys.hasOwnProperty(key)) {
+      name = key;
+    }
+    if (!str) {
+      if (ctx.seen.indexOf(desc.value) < 0) {
+        if (recurseTimes === null) {
+          str = formatValue(ctx, desc.value, null);
+        } else {
+          str = formatValue(ctx, desc.value, recurseTimes - 1);
+        }
+        if (str.indexOf('\n') > -1) {
+          if (array) {
+            str = str.split('\n').map(function(line) {
+              return '  ' + line;
+            }).join('\n').substr(2);
+          } else {
+            str = '\n' + str.split('\n').map(function(line) {
+              return '   ' + line;
+            }).join('\n');
+          }
+        }
+      } else {
+        str = ctx.stylize('[Circular]', 'special');
+      }
     }
   }
   if (typeof name === 'undefined') {

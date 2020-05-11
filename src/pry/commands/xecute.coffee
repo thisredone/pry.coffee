@@ -3,6 +3,7 @@ Range = require '../range'
 Compiler = require '../compiler'
 pygmentize = require 'pygmentize-bundled'
 deasync = require 'deasync'
+{ inspect } = require '../../libs/better_inspect'
 
 class Xecute extends Command
 
@@ -23,7 +24,7 @@ class Xecute extends Command
   execute: (input, chain) ->
     return @switch_mode(chain) if input[0] == 'mode'
     res = @execute_code input.join(' ')
-    res?.then?(-> chain.next()) or chain.next()
+    Promise.resolve(res).then(chain.next.bind(chain))
 
   colorizeLastLine: (prompt, code, lang) ->
     done = false
@@ -36,10 +37,13 @@ class Xecute extends Command
   eval_code: (code, language) ->
     @prompt.indent = @indent
     res = @compiler.execute(@code + @indent + code, language)
-    next = (res) =>
-      @output.prettySend res
+    if res?.then?.recursiveProxyTest?
+      @output.prettySend(res)
       @code = @indent = ''
-    res?.then?(next).catch(next) or next(res)
+    else
+      Promise.resolve(res).catch().then (res) =>
+        @output.prettySend res
+        @code = @indent = ''
 
   execute_code: (code, language = @compiler.mode()) ->
     try

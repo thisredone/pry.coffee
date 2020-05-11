@@ -1,13 +1,14 @@
 coffee = require('coffeescript')
 pry = require('../pry')
 
+
 class Compiler
 
   mode_id: 0
 
   modes: ['js', 'coffee']
 
-  constructor: ({@scope, isCoffee}) ->
+  constructor: ({ @scope, isCoffee }) ->
     @mode_id = 1 if isCoffee
 
   mode: ->
@@ -37,5 +38,6 @@ class Compiler
         stack.push(line)
       e.stack = stack.join("\n")
       throw e
+
 
 module.exports = Compiler

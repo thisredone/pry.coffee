@@ -1,4 +1,5 @@
-{inspect} = require '../../libs/better_inspect'
+{ inspect } = require '../../libs/better_inspect'
+
 
 class LocalOutput
 
