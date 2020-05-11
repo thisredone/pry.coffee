@@ -1,29 +1,29 @@
 {
   "name": "pry",
-  "version": "0.6.2",
-  "description": "Pry like REPL in javascript.",
+  "version": "0.6.3",
+  "description": "Pry like REPL in javascript. fork of blainesch/pry.js",
   "main": "lib/pry.js",
   "scripts": {
     "test": "mocha --recursive --reporter=mocha-pride --compilers coffee:coffee-script/register ./tests && ./node_modules/.bin/cucumber.js",
     "build": "grunt && grunt createExec && grunt copyLibs",
     "deploy": "npm run build && npm publish"
   },
-  "author": "blainesch",
+  "author": "thisredone",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^1.1.1",
-    "coffee-script": "^1.8.0",
-    "deasync": "~0.1.2",
+    "chalk": "^1.1.3",
+    "coffee-script": "^1.10.0",
+    "deasync": "~0.1.7",
     "pygmentize-bundled": "^2.3.0"
   },
   "devDependencies": {
-    "chai": "^3.3.0",
-    "cucumber": "^0.6.0",
-    "grunt": "^0.4.5",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-coffee": "^0.13.0",
+    "chai": "^3.5.0",
+    "cucumber": "^1.0.0",
+    "grunt": "^1.0.1",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-coffee": "^1.0.0",
     "mocha-pride": "0.0.2",
-    "sinon": "^1.12.1"
+    "sinon": "^1.17.4"
   },
   "directories": {
     "example": "examples",
