@@ -25,10 +25,10 @@ class File
     new SyncHighlight(@content(), @type()).code_snippet(start, end, line)
 
   _getIndentLevel: (line) =>
-    line.length - line.trimLeft().length
+    line? and line.length - line.trimLeft().length
 
   getLocalVariables: ->
-    currentIndentLevel = @_getIndentLevel(@lines[@line-1]) # eval pry.it
+    currentIndentLevel = @_getIndentLevel(@lines[@line - 1]) # eval pry.it
     vars = []
     for i in [@line-2..0] when i > 0
       line = @lines[i]
