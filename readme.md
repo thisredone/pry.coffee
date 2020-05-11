@@ -1,6 +1,7 @@
 ## Pryjs
 
 A interactive repl for node, inspired by [pry](https://github.com/pry/pry).
+##### This is a fork of [pry.js](https://github.com/blainesch/pry.js) by [blainesch](https://github.com/blainesch). The work here is highly experimental and not to be trusted.
 
 ### Installing
 
