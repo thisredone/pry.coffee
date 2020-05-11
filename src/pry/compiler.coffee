@@ -20,8 +20,18 @@ class Compiler
     @["execute_#{language}"](code)
 
   execute_coffee: (code) ->
+    if code.match /yield/
+      if @scope('P.coroutine || Promise.coroutine')?
+        code = """
+          _cor = Promise?.coroutine or P?.coroutine
+          do _cor => #{code}
+        """
+      else
+        console.log ">\n> Promise.coroutine is undefined, bluebird is required for yiedling\n>"
+        return
     linesOfJs = coffee.compile(code, bare: true).split("\n")
-    @execute_js(linesOfJs.filter((l) -> l.length > 0 and l.trim()[0..2] isnt 'var').join("\n"))
+    code = linesOfJs.filter((l) -> l.length > 0 and l.trim()[0..2] isnt 'var').join("\n")
+    @execute_js(code)
 
   execute_js: (code) ->
     @scope(code)

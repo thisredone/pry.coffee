@@ -85,8 +85,11 @@ class SyncPrompt extends EventEmitter
 
   send_data: =>
     @count++
-    @emit('data', @lines.trim(), next: @prompt, stop: @close)
-    @lines = ''
+    next = =>
+      @lines = ''
+      @prompt()
+    res = @onData?(@lines.trim(), {next, stop: @close})
+    res?.then?(next) or next()
 
   prompt: =>
     @state().prompt @, [

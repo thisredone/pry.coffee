@@ -6,20 +6,17 @@ A interactive repl for node, inspired by [pry](https://github.com/pry/pry).
 ### Installing
 
 ~~~
-npm install --save pry
+npm install --save-dev pry
 ~~~
 
 ### Usage
-
-Throw this beautiful snippet in the middle of your code:
 
 ~~~ coffeescript
 pry = require 'pry'
 eval pry.it
 ~~~
 
-
-PRYINPUTCOLOR env variable makes pryjs also color typed coffeescript (not only output)
+PRYINPUTCOLOR env variable makes pryjs also color input
 
 ### Extra Commands
 

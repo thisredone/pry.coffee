@@ -13,7 +13,7 @@ class App
     @output = new Output()
     @stack = new Error().stack
     @prompt = new SyncPrompt(typeahead: new AutoComplete(@scope, @find_file()).autocomplete, mode: @find_file().type())
-    @prompt.on('data', @find_command)
+    @prompt.onData = @find_command
 
   commands: ->
     if @_commands.length is 0
