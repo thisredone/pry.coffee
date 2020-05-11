@@ -31,11 +31,16 @@ class App
     @prompt.type('whereami') unless @isStandAlone
     @prompt.open()
 
-  find_file: ->
+  find_file: =>
     @file or= do =>
-      # match the first line after Pry.open that isnt in "file" <anonymous>
-      [_, file, line] = @stack.match(/at Pry.open.*(?:\s+at.*<anonymous>:.*\s|\s+at.*\(([^:]*)\:(\d+))+/)
-      new File(file or __filename, line or 1)
+      foundCall = false
+      for item in @stack.split('\n')
+        if foundCall
+          [_, file, line] = item.match(/([^ (:]+):(\d+):\d+/)
+          return new File(file, line) if file isnt '<anonymous>'
+        else if item.match /Pry\.open/
+          foundCall = true
+      new File(__filename, 1)
 
 
 module.exports = App

@@ -1,5 +1,6 @@
-fs = require('fs')
-SyncHighlight = require('./sync_highlight')
+fs = require 'fs'
+SyncHighlight = require './sync_highlight'
+
 
 class File
 
@@ -29,7 +30,7 @@ class File
     lines = @content().split("\n")
     currentIndentLevel = @_getIndentLevel(lines[@line-1]) # eval pry.it
     vars = []
-    for i in [@line-2..0]
+    for i in [@line-2..0] when i > 0
       line = lines[i]
       indentLevel = @_getIndentLevel(line)
       continue if indentLevel > currentIndentLevel
