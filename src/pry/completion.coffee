@@ -45,14 +45,22 @@ class AutoComplete
       candidates
 
   getPropertyNames: (obj) ->
-    props = (name for name, _ of obj)
     if typeof obj is 'string'
-      props = props.concat Object.getOwnPropertyNames(String.prototype)
+      props = Object.getOwnPropertyNames(String.prototype)
     else if obj instanceof Array
-      props = props.concat Object.getOwnPropertyNames(Array.prototype)
-    else if obj is Object
-      props = props.concat Object.getOwnPropertyNames(Object)
-    props
+      props = Object.getOwnPropertyNames(Array.prototype)
+    else if obj is Object or obj is Reflect
+      props = Object.getOwnPropertyNames(obj)
+    else
+      methods = new Set()
+      tmpObj = obj
+      while (tmpObj = Reflect.getPrototypeOf(tmpObj))
+        keys = Reflect.ownKeys(tmpObj)
+        break if '__proto__' in keys
+        for key in keys
+          methods.add(key) if key isnt 'constructor'
+      props = Array.from(methods)
+    props.concat (name for name, _ of obj)
 
 
 module.exports = AutoComplete
