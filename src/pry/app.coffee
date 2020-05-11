@@ -1,6 +1,7 @@
 SyncPrompt = require('./sync_prompt')
 Output = require('./output/local_output')
 commands = require('./commands')
+AutoComplete = require('./completion')
 
 class App
 
@@ -8,24 +9,13 @@ class App
 
   constructor: (@scope) ->
     @output = new Output()
-    @prompt = new SyncPrompt({
-      typeahead: @typeahead
-    })
+    @prompt = new SyncPrompt(typeahead: new AutoComplete(@scope))
     @prompt.on('data', @find_command)
 
   commands: ->
     if @_commands.length is 0
       @_commands.push new command({@output, @scope, @prompt}) for _, command of commands
     @_commands
-
-  typeahead: (input = '') =>
-    items = []
-    for command in @commands()
-      items = items.concat(command.typeahead(input))
-    if input
-      items = items.filter (item) ->
-        item.indexOf(input) is 0
-    [items, input]
 
   find_command: (input, chain) =>
     for command in @commands()
