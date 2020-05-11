@@ -89,6 +89,7 @@ class SyncPrompt extends EventEmitter
     search: new ReverseSearch
 
   constructor: ({typeahead, @mode}) ->
+    super(arguments...)
     @indent = ''
     @cli = readline.createInterface
       input: process.stdin

@@ -19,9 +19,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// Note: This is a partial and tweaked copy of 
+// Note: This is a partial and tweaked copy of
 //   https://github.com/joyent/node/blob/master/lib/util.js
-//   Goal is to provide another customizable implementation of 
+//   Goal is to provide another customizable implementation of
 //   util.inspect function maintained at
 //   https://github.com/langpavel/node-better-inspect
 //   by Pavel Lang (langpavel@phpskelet.org)
@@ -153,11 +153,16 @@ function formatValue(ctx, value, recurseTimes, firstTime) {
       var name = value.name ? ': ' + value.name : '';
       var source = Function.prototype.toString.call(value);
 
-      if(firstTime && source !== nativeFunctionString) {
-        // basic colorization
-        return ctx.stylize('function', 'special') + source.substring(8);
+      if (firstTime && source !== nativeFunctionString) {
+        if (source.startsWith('class')) {
+          return ctx.stylize('class', 'special') + source.substring(5);
+        } else if (source.match(/function /)) {
+          return ctx.stylize('function', 'special') + source.substring(8);
+        } else {
+          return source;
+        }
       }
-      
+
       source = source.substring(source.indexOf('('));
       var args = source.substring(0, source.indexOf(')')+1);
 

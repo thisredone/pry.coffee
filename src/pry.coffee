@@ -4,13 +4,9 @@ App = require('./pry/app')
 class Pry
 
   constructor: ({@isStandAlone} = {}) ->
-    @it = "(#{@_pry.toString()}).call(this)"
-
-  _pry: ->
-    _ = null
-    pry.open ((input) ->
-      _ = eval(input)
-    ).bind(@)
+    repl = (_) ->
+      pry.open (input) => _ = eval(input)
+    @it = '(' + repl.toString() + ').call(this)'
 
   open: (scope) ->
     app = new App(scope, @isStandAlone)

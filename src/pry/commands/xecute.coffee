@@ -13,7 +13,7 @@ class Xecute extends Command
   args: new Range(1, Infinity)
 
   constructor: ->
-    super
+    super(arguments...)
     isCoffee = @app.isStandAlone or @find_file().type() is 'coffee'
     @compiler = new Compiler({@scope, isCoffee})
     @prompt.mode = @compiler.mode()

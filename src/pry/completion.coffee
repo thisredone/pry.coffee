@@ -57,8 +57,8 @@ class AutoComplete
       while (tmpObj = Reflect.getPrototypeOf(tmpObj))
         keys = Reflect.ownKeys(tmpObj)
         break if '__proto__' in keys
-        for key in keys
-          methods.add(key) if key isnt 'constructor'
+        for key in keys when key isnt 'constructor' and typeof key isnt 'symbol'
+          methods.add(key)
       props = Array.from(methods)
     props.concat (name for name, _ of obj)
 

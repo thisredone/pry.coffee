@@ -1,3 +1,13 @@
+# 0.8.0
+* CoffeeScript 2
+* async/await
+* auto resolving promises
+* this works: foo = await fooPromise
+* auto-completion class names
+* whereami line got from (new Error).stack
+* ES6 functions and classes inspect
+* cleaner erorr stacks without things from inside of pry.js
+
 # 0.6.0
 ## New Features
 * Added Ctrl-R reverse search for terminal history

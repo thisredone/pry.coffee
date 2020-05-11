@@ -9,7 +9,7 @@ class Play extends Command
   args: new Range(1, 2)
 
   constructor: ->
-    super
+    super(arguments...)
     @file = @find_file()
 
   execute: ([start, end], chain) ->

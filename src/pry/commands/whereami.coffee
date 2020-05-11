@@ -11,7 +11,7 @@ class Whereami extends Command
   args: new Range(0, 2)
 
   constructor: ->
-    super
+    super(arguments...)
     @file = @find_file()
 
   execute: ([before, after], chain) ->

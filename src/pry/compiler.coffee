@@ -1,4 +1,4 @@
-coffee = require('coffee-script')
+coffee = require('coffeescript')
 pry = require('../pry')
 
 class Compiler
@@ -20,20 +20,22 @@ class Compiler
     @["execute_#{language}"](code)
 
   execute_coffee: (code) ->
-    if code.match /yield/
-      if @scope(coffee.compile('P?.coroutine or Promise?.coroutine', bare: true))
-        code = """
-          _cor = P?.coroutine or Promise?.coroutine
-          do _cor => #{code}
-        """
-      else
-        console.log ">\n> Promise.coroutine is undefined, bluebird is required for yiedling\n>"
-        return
+    if code.match /await/
+      code = "do -> #{code}"
     linesOfJs = coffee.compile(code, bare: true).split("\n")
-    code = linesOfJs.filter((l) -> l.length > 0 and l.trim()[0..2] isnt 'var').join("\n")
+    code = linesOfJs.filter((l) -> l.length > 0 and l.trim()[0..2] isnt 'var1').join("\n")
+    code = code.replace(/var (\w+)/g, 'global.$1 = null')
     @execute_js(code)
 
   execute_js: (code) ->
-    @scope(code)
+    try
+      @scope(code)
+    catch e
+      stack = []
+      for line in e.stack.split("\n")
+        break if line.match(/src\/pry/)?
+        stack.push(line)
+      e.stack = stack.join("\n")
+      throw e
 
 module.exports = Compiler
