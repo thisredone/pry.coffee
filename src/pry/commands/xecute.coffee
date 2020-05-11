@@ -1,6 +1,8 @@
 Command = require('../command')
 Range = require('../range')
 Compiler = require('../compiler')
+pygmentize = require 'pygmentize-bundled'
+deasync = require 'deasync'
 
 class Xecute extends Command
 
@@ -26,8 +28,20 @@ class Xecute extends Command
     @output.send @compiler.execute(@code + @indent + code, language)
     @code = @indent = ''
 
+  colorizeLastLine: (code) ->
+    done = false
+    pygmentize {lang: @compiler.mode(), format: "terminal"}, code, (_, res) =>
+      done = true
+      process.stdout.moveCursor(0, -1)
+      console.log @prompt.cli._prompt + res.toString().slice(0, -1)
+    deasync.runLoopOnce() until done
+
   execute_code: (code, language = null) ->
     try
+      # process.stdout.moveCursor(0, -1)
+      # console.log @prompt.cli._prompt + code
+      @colorizeLastLine(code)
+
       if code.trim().slice(-1) is '\\'
         @code += @indent + code.trim().slice(0, -1) + "\n"
         @indent += '  '
@@ -36,6 +50,8 @@ class Xecute extends Command
           if code
             @code += @indent + code.trim() + "\n"
           else
+            process.stdout.moveCursor(0, -1)
+            @prompt.count--
             @indent = @indent.slice(0, -2)
             @eval_code(code) unless @indent
         else
@@ -44,6 +60,7 @@ class Xecute extends Command
       @prompt.indent = @indent
 
     catch err
+      @prompt.indent = @code = @indent = ''
       @last_error = err
       @output.send err
 
