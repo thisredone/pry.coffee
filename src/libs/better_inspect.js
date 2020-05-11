@@ -126,15 +126,6 @@ function formatValue(ctx, value, recurseTimes, firstTime) {
   if (isProxy(value)) {
     return '[Probably Proxy]';
   }
-  // Provide a hook for user-specified inspect functions.
-  // Check that value is an object with an inspect function on it
-  if (value && typeof value.inspect === 'function' &&
-      // Filter out the util module, it's inspect function is special
-      value.inspect !== exports.inspect &&
-      // Also filter out any prototype objects using the circular check.
-      !(value.constructor && value.constructor.prototype === value)) {
-    return String(value.inspect(recurseTimes));
-  }
 
   // Primitive types cannot have properties
   var primitive = formatPrimitive(ctx, value);
@@ -179,7 +170,7 @@ function formatValue(ctx, value, recurseTimes, firstTime) {
     if (util.isDate(value)) {
       return ctx.stylize(Date.prototype.toString.call(value), 'date');
     }
-    if (util.isError(value)) {
+    if (isError(value)) {
       return formatError(value);
     }
   }
@@ -209,7 +200,7 @@ function formatValue(ctx, value, recurseTimes, firstTime) {
   }
 
   // Make error with message first say the error
-  if (util.isError(value)) {
+  if (isError(value)) {
     base = ' ' + formatError(value);
   }
 
@@ -294,8 +285,21 @@ function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
 }
 
 
+function isError(value) {
+  try {
+    return util.isError(value)
+  } catch(e) {
+    return false;
+  }
+}
+
+
 function isProxy(value) {
-  return typeof value === 'object' && String(value) === 'undefined';
+  try {
+    return typeof value === 'object' && String(value) === 'undefined';
+  } catch(e) {
+    return false;
+  }
 }
 
 
@@ -363,6 +367,12 @@ function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
 
 
 function reduceToSingleString(output, base, braces) {
+  if (output.length > 2) {
+    var isSame = !output.find(row => row !== output[0])
+    if (isSame) {
+      return braces[0] + ' ' + output.length + ' x ' + output[0] + ' ' + braces[1];
+    }
+  }
   var numLinesEst = 0;
   var length = output.reduce(function(prev, cur) {
     numLinesEst++;

@@ -7,7 +7,7 @@ class LocalOutput
 
   send: console.log.bind(console)
 
-  prettySend: ->
+  prettySend: =>
     fullOutput = (inspect(arg, false, 2, true) for arg in arguments).join("\n")
     lines = fullOutput.split("\n")
     if lines.length > process.stdout.rows - 2

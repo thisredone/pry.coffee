@@ -41,9 +41,10 @@ class Xecute extends Command
       @output.prettySend(res)
       @code = @indent = ''
     else
-      Promise.resolve(res).catch().then (res) =>
-        @output.prettySend res
-        @code = @indent = ''
+      Promise.resolve(res)
+        .then(@output.prettySend)
+        .catch(@output.prettySend)
+        .then => @code = @indent = ''
 
   execute_code: (code, language = @compiler.mode()) ->
     try
