@@ -306,6 +306,11 @@ function isProxy(value) {
 
 function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
   var name, str, desc;
+  try {
+    value[key]
+  } catch(e) {
+    return '[Probably Proxy]'
+  }
   if (isProxy(value[key])) {
     str = '[Probably Proxy]';
   } else {
