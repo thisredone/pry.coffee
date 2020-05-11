@@ -24,7 +24,7 @@ class Compiler
     if code.match /await/
       code = "do -> #{code}"
     linesOfJs = coffee.compile(code, bare: true).split("\n")
-    code = linesOfJs.filter((l) -> l.length > 0 and l.trim()[0..2] isnt 'var1').join("\n")
+    code = linesOfJs.filter((l) -> l.length > 0 and l.trim()[0..2] isnt 'var').join("\n")
     code = code.replace(/var (\w+)/g, 'global.$1 = null')
     @execute_js(code)
 
