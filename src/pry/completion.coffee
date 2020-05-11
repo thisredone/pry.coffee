@@ -11,7 +11,7 @@ class AutoComplete
     'return', 'throw', 'break', 'continue', 'if', 'else', 'switch', 'for', 'while',
     'do', 'try', 'catch', 'finally', 'class', 'extends', 'super',
     'whereami', 'kill!', 'exit', 'wtf', 'play', 'version', 'help' # commands
-  ]
+  ].concat(Object.getOwnPropertyNames(global))
 
   constructor: (@scope, @file) ->
     @localVars = @file.getLocalVariables()
@@ -35,7 +35,8 @@ class AutoComplete
 
   completeVariable: (text) ->
     if free = text.match(SIMPLEVAR)?[1]
-      [@getCompletions(free, @localVars.concat(KEYWORDS)), free]
+      globalVars = (key for own key of global when KEYWORDS.indexOf(key) is -1)
+      [@getCompletions(free, @localVars.concat(KEYWORDS, globalVars)), free]
 
   getCompletions: (prefix, candidates) ->
     if prefix
