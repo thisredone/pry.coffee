@@ -9,18 +9,17 @@
   "author": "blainesch",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^0.5.1",
+    "chalk": "^1.1.1",
     "coffee-script": "^1.8.0",
-    "deasync": "~0.0.7",
-    "pygmentize-bundled": "^2.3.0",
-    "underscore": "^1.7.0"
+    "deasync": "~0.1.2",
+    "pygmentize-bundled": "^2.3.0"
   },
   "devDependencies": {
-    "chai": "^1.10.0",
-    "cucumber": "^0.4.7",
+    "chai": "^3.3.0",
+    "cucumber": "^0.6.0",
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-coffee": "^0.12.0",
+    "grunt-contrib-coffee": "^0.13.0",
     "mocha-pride": "0.0.2",
     "sinon": "^1.12.1"
   },
