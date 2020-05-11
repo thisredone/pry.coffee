@@ -20,15 +20,18 @@ class Help extends Command
       ['help']
 
   execute: ([name], chain) ->
-    if name
-      command = @command(name)
-      @output.add(chalk.blue(command.name), '-', command.definition)
-      @output.add(command.help)
-      @output.sendAll()
-    else
-      for name, command of @commands()
-        @output.add(chalk.blue(command.name), '-', command.definition) if command.name
-      @output.sendAll()
+    try
+      if name
+        command = @command(name)
+        @output.add(chalk.blue(command.name), '-', command.definition)
+        @output.add(command.help)
+        @output.sendAll()
+      else
+        for name, command of @commands()
+          @output.add(chalk.blue(command.name), '-', command.definition) if command.name
+        @output.sendAll()
+    catch e
+      console.log "Can't do it."
     chain.next()
 
 module.exports = Help

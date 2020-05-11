@@ -4,11 +4,12 @@ commands = require('./commands')
 AutoComplete = require('./completion')
 File = require('./file')
 
+
 class App
 
   _commands: []
 
-  constructor: (@scope) ->
+  constructor: (@scope, @isStandAlone) ->
     @output = new Output()
     @stack = new Error().stack
     @prompt = new SyncPrompt(typeahead: new AutoComplete(@scope, @find_file()).autocomplete)
@@ -27,7 +28,7 @@ class App
     false
 
   open: ->
-    @prompt.type('whereami')
+    @prompt.type('whereami') unless @isStandAlone
     @prompt.open()
 
   find_file: ->
@@ -35,5 +36,6 @@ class App
       # match the first line after Pry.open that isnt in "file" <anonymous>
       [_, file, line] = @stack.match(/at Pry.open.*(?:\s+at.*<anonymous>:.*\s|\s+at.*\(([^:]*)\:(\d+))+/)
       new File(file or __filename, line or 1)
+
 
 module.exports = App

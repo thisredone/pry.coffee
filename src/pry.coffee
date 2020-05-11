@@ -1,8 +1,9 @@
+#!/usr/bin/env node
 App = require('./pry/app')
 
 class Pry
 
-  constructor: ->
+  constructor: ({@isStandAlone} = {}) ->
     @it = "(#{@_pry.toString()}).call(this)"
 
   _pry: ->
@@ -12,7 +13,12 @@ class Pry
     ).bind(@)
 
   open: (scope) ->
-    app = new App(scope)
+    app = new App(scope, @isStandAlone)
     app.open()
 
+
 module.exports = new Pry
+
+
+if require.main is module
+  eval (pry = new Pry(isStandAlone: true)).it
