@@ -37,14 +37,14 @@ class Xecute extends Command
   eval_code: (code, language) ->
     @prompt.indent = @indent
     res = @compiler.execute(@code + @indent + code, language)
-    if res?.then?.recursiveProxyTest?
+    next = (res) =>
       @output.prettySend(res)
       @code = @indent = ''
+
+    if res instanceof Promise
+      res.catch(next).then(next)
     else
-      Promise.resolve(res)
-        .then(@output.prettySend)
-        .catch(@output.prettySend)
-        .then => @code = @indent = ''
+      next(res)
 
   execute_code: (code, language = @compiler.mode()) ->
     try

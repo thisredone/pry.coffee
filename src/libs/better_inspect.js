@@ -260,8 +260,9 @@ function formatPrimitive(ctx, value) {
 }
 
 
-function formatError(value) {
-  return '[' + Error.prototype.toString.call(value) + ']';
+function formatError(error) {
+  let msg = Error.prototype.toString.call(error);
+  return '[' + msg + ']\n' + error.stack.split('\n').slice(1, 5).join('\n');
 }
 
 
