@@ -175,7 +175,7 @@ function formatValue(ctx, value, recurseTimes, firstTime) {
     }
   }
 
-  var base = '', array = false, braces = ['{', '}'];
+  var base = '', array = false, iterator = false, braces = ['{', '}'];
 
   // Make Array say that they are Array
   if (util.isArray(value)) {
@@ -204,7 +204,11 @@ function formatValue(ctx, value, recurseTimes, firstTime) {
     base = ' ' + formatError(value);
   }
 
-  if (keys.length === 0 && (!array || value.length == 0)) {
+  if (value instanceof Set) {
+    braces[0] = 'Set {'
+  } else if (value instanceof Map) {
+    braces[0] = 'Map {'
+  } else if (keys.length === 0 && (!array || value.length == 0)) {
     return braces[0] + base + braces[1];
   }
 
@@ -216,11 +220,23 @@ function formatValue(ctx, value, recurseTimes, firstTime) {
     }
   }
 
+  if (!array && typeof value[Symbol.iterator] === 'function') {
+    if (braces[0].length === 1) {
+      braces[0] = 'Iterator {'
+    }
+    iterator = true;
+  }
+
   ctx.seen.push(value);
 
   var output;
   if (array) {
     output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+  } else if (iterator) {
+    let arr = [...value];
+    keys = Object.keys(arr);
+    visibleKeys = arrayToHash(keys);
+    output = formatArray(ctx, Array.from(value), recurseTimes, visibleKeys, keys);
   } else {
     output = keys.map(function(key) {
       return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
