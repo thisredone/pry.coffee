@@ -24,36 +24,57 @@ class Xecute extends Command
     @execute_code input.join(' ')
     chain.next()
 
+  colorizeLastLine: (prompt, code, lang = @compiler.mode()) ->
+    done = false
+    pygmentize {lang, format: "terminal"}, code, (_, res) =>
+      done = true
+      process.stdout.moveCursor(0, -1)
+      console.log prompt + res.toString().trim()
+    deasync.runLoopOnce() until done
+
   eval_code: (code, language) ->
     @output.send @compiler.execute(@code + @indent + code, language)
     @code = @indent = ''
 
-  colorizeLastLine: (code) ->
-    done = false
-    pygmentize {lang: @compiler.mode(), format: "terminal"}, code, (_, res) =>
-      done = true
-      process.stdout.moveCursor(0, -1)
-      console.log @prompt.cli._prompt + res.toString().slice(0, -1)
-    deasync.runLoopOnce() until done
-
   execute_code: (code, language = null) ->
     try
-      # process.stdout.moveCursor(0, -1)
-      # console.log @prompt.cli._prompt + code
-      @colorizeLastLine(code)
+      shouldDecreaseIndent = code.match(/^\s*(\}|\]|else|catch|finally|else\s+if\s+\S.*)$/)?
 
-      if code.trim().slice(-1) is '\\'
-        @code += @indent + code.trim().slice(0, -1) + "\n"
+      prompt = @prompt.cli._prompt
+      if code and shouldDecreaseIndent
+        @indent = @indent.slice(0, -2)
+        prompt = prompt.slice(0, -2)
+        code += '  '
+
+      # process.stdout.moveCursor(0, -1)
+      # console.log prompt + code
+      @colorizeLastLine(prompt, code) if code
+
+      shouldIncreaseIndent = code.match(///^\s*(.*class
+        |[a-zA-Z\$_](\w|\$|:|\.)*\s*(?=\:(\s*\(.*\))?\s*((=|-)&gt;\s*$)) # function that is not one line
+        |[a-zA-Z\$_](\w|\$|\.)*\s*(:|=)\s*((if|while)(?!.*?then)|for|$) # assignment using multiline if/while/for
+        |(if|while|unless)\b(?!.*?then)|(for|switch|when|loop)\b
+        |(else|try|finally|catch\s+\S.*|else\s+if\s+\S.*)\s*$
+        |.*[-=]&gt;$
+        |.*[\{\[]$)
+        |\-\>\s*$///)?
+
+      hasTrailingBackslash = code.trim().slice(-1) is '\\'
+      if shouldIncreaseIndent or hasTrailingBackslash
+        @code += @indent + (if hasTrailingBackslash then code.slice(0, -1) else code) + "\n"
         @indent += '  '
       else
+
         if @indent
           if code
-            @code += @indent + code.trim() + "\n"
+            @code += @indent + code + "\n"
           else
-            process.stdout.moveCursor(0, -1)
             @prompt.count--
             @indent = @indent.slice(0, -2)
-            @eval_code(code) unless @indent
+            if @indent
+              process.stdout.moveCursor(0, -1)
+            else
+              @eval_code(code)
         else
           @eval_code(code)
 
