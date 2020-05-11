@@ -34,7 +34,7 @@ class Compiler
     catch e
       stack = []
       for line in e.stack.split("\n")
-        break if line.match(/src\/pry/)?
+        break if line.includes __dirname
         stack.push(line)
       e.stack = stack.join("\n")
       throw e
